@@ -11,7 +11,7 @@ From the Advent of Code website:
 - Within each folder:
     - `aoc_template.py`: the module that contains the code for parsing the puzzle data and solving the puzzle
     - `test_aoc_template.py`: tests
-    - `example1.txt` (and occasionally more additional data): the example data provided for each day's puzzle
+    - `example1.txt` (and occasionally additional data data files): the example data provided for each day's puzzle
 ## Principles
 ### General Principles
 **AI is not used in any form or fashion** 
@@ -26,9 +26,14 @@ This is not an endorsement of any coding style or approach; it's just a reflecti
 - Avoid usage of `for` loops in favor of iterators and generator expresssions.
 - Heavy usage of `itertools` and `more-itertools` modules.
 ### Use Only Standard Library Modules
-- The one exception is my heavy usage of `more-itertools`.
+- The one exception is my heavy usage of `more-itertools`, which I wish were part of the standard library.
 
 ## Apologies
 **I'm not writing many tests (even though I probably should).**
 
 **I'm not adding docstrings to my code.**
+
+## Areas of Focus this Year
+Every year I choose areas of focus for improvement.
+- Type Hinting
+- Using `functools.reduce` and `itertools.accumulate` instead of generator functions whenever possible. 
