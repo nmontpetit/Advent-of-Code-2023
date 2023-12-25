@@ -1,5 +1,9 @@
 # Nick's 2023 Advent of Code Solutions
 ## Description
+From the Advent of Code website:
+> Advent of Code is an Advent calendar of small programming puzzles for a 
+> variety of skill sets and skill levels that can be solved in any programming
+> language you like.
 - Website: www.adventofcode.com
 - Language I'm using:  Python
 ### Repository Structure
