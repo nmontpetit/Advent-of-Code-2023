@@ -2,9 +2,7 @@
 
 import pathlib
 import sys
-from typing import Iterator
-from itertools import accumulate, count, takewhile
-from more_itertools import first
+from functools import reduce
 
 
 def parse(
@@ -116,8 +114,18 @@ def get_energized_count(
 def get_starting_points(
         data: dict[tuple[int, int]]
         ) -> list[tuple[tuple[int, int], str]]:
-    pass
-
+    
+    max_x = max(x for x, _ in data.keys())
+    max_y = max(y for _, y in data.keys())
+    return reduce(
+        lambda x, y: x + y,
+        (
+            [((-1,            y), 'R') for y in range(max_y + 1)],
+            [((max_x + 1,     y), 'L') for y in range(max_y + 1)],
+            [((x,            -1), 'D') for x in range(max_x + 1)],
+            [((x,     max_y + 1), 'U') for x in range(max_x + 1)],
+        )
+    ) 
 
 def part1(data: dict[tuple[int, int], str]) -> int:
     """Solve part 1"""
@@ -126,7 +134,11 @@ def part1(data: dict[tuple[int, int], str]) -> int:
 
 def part2(data: dict[tuple[int, int], str]) -> int:
     """Solve part 2"""
-    pass
+    return max(
+        get_energized_count(data, starting_point)
+        for starting_point
+        in get_starting_points(data)
+    )
 
 
 def solve(puzzle_input):
