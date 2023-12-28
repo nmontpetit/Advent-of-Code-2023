@@ -32,14 +32,15 @@ def update_point_by_one(
 
 
 def mk_lists_of_points_covered(
-        data: dict[(int, int), str]
+        data: dict[(int, int), str],
+        starting_point: tuple[tuple[int, int], str]
         ) -> list[list[tuple[tuple[int, int], str]]]:
     """There's got to be a better way."""
 
     max_x = max(x for x, _ in data.keys())
     max_y = max(y for _, y in data.keys())
 
-    lists_to_try = [[((-1, 0), 'R')]]
+    lists_to_try = [[starting_point]]
     points_covered_lists = []
     visited_points = set()
 
@@ -98,18 +99,25 @@ def mk_lists_of_points_covered(
     return points_covered_lists
             
 
-def part1(data):
-    """Solve part 1"""
+def get_energized_count(
+        data: dict[(int, int), str],
+        starting_point: tuple[tuple[int, int], str]
+        ) -> int:
     return len(
         set(
             point[0]
             for list_points
-            in mk_lists_of_points_covered(data)
+            in mk_lists_of_points_covered(data, starting_point)
             for point in list_points
         )
-    ) - 1
+        ) - 1
 
-def part2(data):
+
+def part1(data: dict[(int, int), str]) -> int:
+    """Solve part 1"""
+    return get_energized_count(data, ((-1, 0), 'R'))
+
+def part2(data: dict[(int, int), str]) -> int:
     """Solve part 2"""
     pass
 
