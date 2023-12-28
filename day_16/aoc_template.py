@@ -9,7 +9,7 @@ from more_itertools import first
 
 def parse(
         puzzle_input: str
-        ) -> dict[(int, int), str]:
+        ) -> dict[tuple[int, int], str]:
     """Parse input"""
     return {
         (x, y): val
@@ -32,7 +32,7 @@ def update_point_by_one(
 
 
 def mk_lists_of_points_covered(
-        data: dict[(int, int), str],
+        data: dict[tuple[int, int], str],
         starting_point: tuple[tuple[int, int], str]
         ) -> list[list[tuple[tuple[int, int], str]]]:
     """There's got to be a better way."""
@@ -100,7 +100,7 @@ def mk_lists_of_points_covered(
             
 
 def get_energized_count(
-        data: dict[(int, int), str],
+        data: dict[tuple[int, int], str],
         starting_point: tuple[tuple[int, int], str]
         ) -> int:
     return len(
@@ -113,11 +113,18 @@ def get_energized_count(
         ) - 1
 
 
-def part1(data: dict[(int, int), str]) -> int:
+def get_starting_points(
+        data: dict[tuple[int, int]]
+        ) -> list[tuple[tuple[int, int], str]]:
+    pass
+
+
+def part1(data: dict[tuple[int, int], str]) -> int:
     """Solve part 1"""
     return get_energized_count(data, ((-1, 0), 'R'))
 
-def part2(data: dict[(int, int), str]) -> int:
+
+def part2(data: dict[tuple[int, int], str]) -> int:
     """Solve part 2"""
     pass
 
