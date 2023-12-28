@@ -3,7 +3,7 @@
 import pathlib
 import sys
 from typing import Iterator
-from itertools import dropwhile, accumulate, count
+from itertools import accumulate, count, takewhile
 from more_itertools import first
 
 
@@ -18,32 +18,12 @@ def parse(
         if val != '.'
     }
 
-def mk_point_in_motion_ck(
-        data: dict[(int, int), str],
-        ) -> callable:
-    def point_in_motion(
-            point: tuple[tuple[int, int], str]
-            ) -> bool:
-
-        x, y = point[0]
-        dir = point[1]
-        max_x = max(x for x, _ in data.keys())
-        max_y = max(y for _, y in data.keys())
-
-        return (
-            point[0] not in data and (
-                (dir == 'R' and x < max_x) or
-                (dir == 'L' and x > 0) or
-                (dir == 'U' and y > 0) or
-                (dir == 'D' and y < max_y)
-            )
-        )
-    return point_in_motion
-
 
 def update_point_by_one(
         point: tuple[tuple[int, int], str]
         ) -> tuple[tuple[int, int], str]:
+    """Given a point and direction, return new point after moving one unit in
+       the given direction.""" 
     (x, y), dir = point
     if   dir == 'L': return ((x-1, y), dir)
     elif dir == 'R': return ((x+1, y), dir)
@@ -51,42 +31,83 @@ def update_point_by_one(
     else:            return ((x, y+1), dir)
 
 
-def update_iterator(
-        point: tuple[tuple[int, int], str]
-    ):
-    return accumulate(
-            count(),
-            lambda x, _: update_point_by_one(x),
-            initial = point
-    )  
+def mk_lists_of_points_covered(
+        data: dict[(int, int), str]
+        ) -> list[list[tuple[tuple[int, int], str]]]:
+    """There's got to be a better way."""
 
+    max_x = max(x for x, _ in data.keys())
+    max_y = max(y for _, y in data.keys())
 
-def advance_light(
-        data: dict[(int, int), str],
-        point: tuple[tuple[int, int], str]
-        ) -> list[tuple[tuple[int, int], str]]:
+    lists_to_try = [[((-1, 0), 'R')]]
+    points_covered_lists = []
+    visited_points = set()
 
-    new_point = first(
-        dropwhile(
-            mk_point_in_motion_ck(data),
-            update_iterator(point)
-            )
-        )
+    while len(lists_to_try) > 0:
+        points_covered_list = lists_to_try.pop(0)
 
-    return new_point
+        while True:
+            next_point = update_point_by_one(points_covered_list[-1])
+            x, y = next_point[0]
+            if ( x > max_x or x < 0 or y < 0 or y > max_y or 
+                 next_point in visited_points
+               ):
+                break               
 
+            points_covered_list += [next_point]
+            visited_points.add(next_point)
 
-def mk_line_iterator(
-        data: dict[(int, int), str],
-        starting_point: tuple[tuple[int, int], str]
-        ):
-    return 
+            if next_point[0] in data:
+                reflector_type = data[next_point[0]]
+                direction = next_point[1]
 
+                if direction == 'R' and reflector_type == '\\':
+                    points_covered_list += [(next_point[0], 'D')] 
+                elif direction == 'R' and reflector_type == '/':
+                    points_covered_list += [(next_point[0], 'U')] 
+                elif direction == 'R' and reflector_type == '|':
+                    lists_to_try += [(points_covered_list.copy() + [(next_point[0], 'D')])]
+                    points_covered_list += [(next_point[0], 'U')] 
+                
+                elif direction == 'L' and reflector_type == '\\':
+                    points_covered_list += [(next_point[0], 'U')] 
+                elif direction == 'L' and reflector_type == '/':
+                    points_covered_list += [(next_point[0], 'D')] 
+                elif direction == 'L' and reflector_type == '|':
+                    lists_to_try += [(points_covered_list.copy() + [(next_point[0], 'D')])]
+                    points_covered_list += [(next_point[0], 'U')] 
 
+                elif direction == 'U' and reflector_type == '\\':
+                    points_covered_list += [(next_point[0], 'L')] 
+                elif direction == 'U' and reflector_type == '/':
+                    points_covered_list += [(next_point[0], 'R')] 
+                elif direction == 'U' and reflector_type == '-':
+                    lists_to_try += [(points_covered_list.copy() + [(next_point[0], 'L')])]
+                    points_covered_list += [(next_point[0], 'R')] 
+
+                elif direction == 'D' and reflector_type == '\\':
+                    points_covered_list += [(next_point[0], 'R')] 
+                elif direction == 'D' and reflector_type == '/':
+                    points_covered_list += [(next_point[0], 'L')] 
+                elif direction == 'D' and reflector_type == '-':
+                    lists_to_try += [(points_covered_list.copy() + [(next_point[0], 'L')])]
+                    points_covered_list += [(next_point[0], 'R')] 
+
+        points_covered_lists += [points_covered_list]
+    
+    return points_covered_lists
+            
 
 def part1(data):
     """Solve part 1"""
-    pass
+    return len(
+        set(
+            point[0]
+            for list_points
+            in mk_lists_of_points_covered(data)
+            for point in list_points
+        )
+    ) - 1
 
 def part2(data):
     """Solve part 2"""
